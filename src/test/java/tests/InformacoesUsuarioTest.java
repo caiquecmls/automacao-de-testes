@@ -11,8 +11,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 
@@ -33,16 +37,7 @@ public class InformacoesUsuarioTest {
 
         //Navegando para a página da Taskit!
         navegador.get("http://www.juliodelima.com.br/taskit");
-    }
-    @AfterEach
-    public void tearDown(){
-        System.out.println("AbstractBaseTest.tearDown");
-        //Fechar o navegador
-//        navegador.quit();
-    }
 
-    @Test
-    public void testAdicionaUmaInformacaoAdicionalDoUsuario() {
         //Clicar no Link que possui o texto "Sign in"
         navegador.findElement(new By.ByLinkText("Sign in")).click();
 
@@ -63,7 +58,16 @@ public class InformacoesUsuarioTest {
 
         //Clicar no Link que possui o texto "More data about you"
         navegador.findElement(new By.ByLinkText("MORE DATA ABOUT YOU")).click();
+    }
+    @AfterEach
+    public void tearDown(){
+        System.out.println("AbstractBaseTest.tearDown");
+        //Fechar o navegador
+//        navegador.quit();
+    }
 
+//    @Test
+    public void testAdicionaUmaInformacaoAdicionalDoUsuario() {
         //Clica no botão através do seu xpath
         navegador.findElement(new By.ByXPath("//*[@id=\"moredata\"]/div[2]/button")).click();
 
@@ -89,8 +93,27 @@ public class InformacoesUsuarioTest {
 //        WebElement me = navegador.findElement(By.className("me"));
 //        String textoNoElementoMe = me.getText();
 //        assertEquals("Hi, Caique", textoNoElementoMe);
+    }
 
+    @Test
+    public void removerUmContantoDeUmUsuario(){
+        //Clica no elemento pelo seu xpath //<span[text()="+551133334444"]/following-sibling::a</span>
+        navegador.findElement(new By.ByXPath("//span[text()='+551133334444']/following-sibling::a")).click();
 
+        //confirmar a janela javascript
+        navegador.switchTo().alert().accept();
+
+        //validar que a mensagem apresentada foi Rest in peace, dear phone!
+        WebElement mensagemPop = navegador.findElement(new By.ById("toast-container"));
+        String textoNoElemento = mensagemPop.getText();
+        assertEquals("Rest in peace, dear phone!",textoNoElemento);
+
+        //Aguardar até 10 segundos para que a janela desapareça
+        long segundos = 10;
+        WebDriverWait aguardar = new WebDriverWait(navegador, 10);
+        aguardar.until(ExpectedConditions.stalenessOf(mensagemPop));
+        //Clica no link com o testo "Logout"
+        navegador.findElement(new By.ByLinkText("Logout")).click();
 
     }
 }
